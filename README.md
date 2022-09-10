@@ -2,9 +2,9 @@
 ![](https://hackster.imgix.net/uploads/attachments/1493533/ezgif_com-gif-maker_(1)_ng6xGzwt4h.gif?auto=format%2Ccompress&gifq=35&w=900&h=675&fit=min&fm=mp4)
 ## Things used in this project
 ### Hardware components
-STM32F469 DISCOVERY
-Espressif ESP8266 ESP-01
-Arduino Mini USB serial adapter
+STM32F469 DISCOVERY  
+Espressif ESP8266 ESP-01  
+Arduino Mini USB serial adapter  
 ### Software apps and online services
 RT-Thread IoT OS
 STMicroelectronics STM32CubeMX
