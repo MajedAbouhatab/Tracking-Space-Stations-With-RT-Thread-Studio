@@ -18,14 +18,14 @@ Solder Wire, Lead Free
 
 ### Background
 
-Many of my fellow makers used Single Board Computers (SBC) and paid Application Programming Interface to tack satellites in Earth orbit. This project is a simple and low cost method to track Space Stations. We used knowledge gained from my [previous project](https://www.hackster.io/abouhatab/using-rt-thread-studio-to-control-esp32-with-stm32f469-disco-117bdf) and data provided to our web browser for free by n2yo.com. Furthermore, we displayed the names of people currently in space using information gathered by open-notify.org.
+Many of my fellow makers used Single Board Computers (SBC) and paid Application Programming Interface (API) to tack satellites orbiting the Earth. This project is a simple and low cost method to track Space Stations. We used knowledge gained from my [previous project](https://www.hackster.io/abouhatab/using-rt-thread-studio-to-control-esp32-with-stm32f469-disco-117bdf) and data provided to our web browser for free by n2yo.com. Furthermore, we displayed the names of people currently in space using information gathered by open-notify.org.
 ### Game Plan
 
 ![](https://hackster.imgix.net/uploads/attachments/1493963/20220909_202853_VOpuTZfaTx.jpg?auto=compress%2Cformat&w=740&h=555&fit=max)
 
 Just like in the previous project, we used UART to communicate between STM32F469 DISCOVERY board and the Wi-Fi Dev board. To add an extra challenge and reduce the cost of implementation we replaced ESP32 with ESP-01 which required a programmer because there is no USB port.
 
-We got the URLs we needed to use by pressing F12 on the page we need to get data from. Studying JavaScrips reveled that we have to use the following format:
+We got the URLs we needed to use by pressing F12 on the page we need to get data from. Studying JavaScrips revealed that we have to use the following format:
 
 ```
 https://www.n2yo.com/sat/instant-tracking.php?s=<NORAD ID>&d=1
@@ -90,7 +90,7 @@ Please note that this tutorial is using LVGL v8.3.1 and if you have to look some
 
 ### Visual Studio Code
 
-We used [tzapu/WiFiManager](https://github.com/tzapu/WiFiManager) to connect ESP01 to Wi-Fi without hard coding credentials. Once we are online we can wait to URL to come from STM32F469 DISCOVERY via UART then send back the unprocessed response.
+We used [tzapu/WiFiManager](https://github.com/tzapu/WiFiManager) to connect ESP-01 to Wi-Fi without hard coding credentials. Once we are online we can wait for URL to come from STM32F469 DISCOVERY via UART then send back the unprocessed response.
 
 ### Hardware
 
