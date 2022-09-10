@@ -6,14 +6,14 @@ STM32F469 DISCOVERY
 Espressif ESP8266 ESP-01  
 Arduino Mini USB serial adapter  
 ### Software apps and online services
-RT-Thread IoT OS
-STMicroelectronics STM32CubeMX
-Microsoft VS Code
-ezgif.com
-LVGL
+RT-Thread IoT OS  
+STMicroelectronics STM32CubeMX  
+Microsoft VS Code  
+ezgif.com  
+LVGL  
 ### Hand tools and fabrication machines
-Soldering iron (generic)
-Solder Wire, Lead Free
+Soldering iron (generic)  
+Solder Wire, Lead Free  
 ## Story
 
 ### Background
