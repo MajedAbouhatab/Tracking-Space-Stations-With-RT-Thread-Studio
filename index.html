@@ -1,1 +1,194 @@
+<html>
 
+<head>
+    <style>
+        body {
+            background: #2b458c;
+            color: white;
+            font-family: "Helvetica Neue", Helvetica, Tahoma, Arial, 'Microsoft Yahei', 'PingFang SC', 'Hiragino Sans GB', 'WenQuanYi Micro Hei', sans-serif;
+            text-align: center;
+            font-size: 18px;
+            justify-content: center;
+            align-items: center;
+            margin-left: 20%;
+            margin-right: 20%;
+        }
+
+        a {
+            color: grey;
+        }
+
+        h2 {
+            font-weight: bold;
+        }
+
+        h3 {
+            text-decoration: underline overline white;
+        }
+    </style>
+    <title>Tracking Space Stations With RT-Thread Studio</title>
+</head>
+
+<body>
+    <br><a href="https://www.rt-thread.io/"><img src="https://www.rt-thread.io/images/logo_down.png" alt=""></a><br>
+    <h1>Tracking Space Stations With RT-Thread Studio</h1>
+    <br><img
+        src="https://hackster.imgix.net/uploads/attachments/1493533/ezgif_com-gif-maker_(1)_ng6xGzwt4h.gif?auto=compress%2Cformat&amp;w=800&amp;fm=mp4">
+    <br>
+    <br>
+    <h2>Things used in this project</h2>
+    <br>
+    <h3>Hardware components</h3>
+    <a href="https://www.st.com/en/evaluation-tools/32f469idiscovery.html">STM32F469 DISCOVERY</a><br>
+    <a href="https://www.hackster.io/Espressif/products/esp8266-esp-01?ref=project-20ec54">Espressif ESP8266
+        ESP-01</a><br>
+    <a href="https://www.hackster.io/arduino/products/arduino-mini-usb-serial-adapter?ref=project-20ec54">Arduino Mini
+        USB serial adapter</a><br>
+    <br>
+    <h3>Software apps and online services</h3>
+    <a href="https://www.rt-thread.io/download.html?download=RT-Thread">RT-Thread IoT OS</a><br>
+    <a href="https://www.st.com/en/development-tools/stm32cubemx.html">STMicroelectronics STM32CubeMX</a><br>
+    <a href="https://code.visualstudio.com/">Microsoft VS Code</a><br>
+    <a href="https://ezgif.com/">ezgif.com</a><br>
+    <a href="https://docs.lvgl.io/master/index.html">LVGL</a><br>
+    <br>
+    <h3>Hand tools and fabrication machines</h3>
+    Soldering iron (generic)<br>
+    Solder Wire, Lead Free<br>
+    <h2>Story</h2>
+    <h3>Background</h3>
+    Many of my fellow makers used Single Board Computers (SBC) and paid Application Programming Interface (API) to
+    tack satellites orbiting the Earth. This project is a simple and low cost method to track Space Stations. We
+    used knowledge gained from my <a
+        href="https://www.facebook.com/watch/?v=6007592369284150"
+        rel="nofollow">previous project</a> and data provided to our web browser for free by n2yo.com. Furthermore,
+    we displayed the names of people currently in space using information gathered by open-notify.org.<br>
+    <br>
+    <h3>Game Plan</h3>
+    <img
+        src="https://hackster.imgix.net/uploads/attachments/1493963/20220909_202853_VOpuTZfaTx.jpg?auto=compress%2Cformat&amp;w=740&amp;h=555&amp;fit=max">
+    <br>
+    <br>Just like in the previous project, we used UART to communicate between STM32F469 DISCOVERY board and the Wi-Fi
+    Dev board. To add an extra challenge and reduce the cost of implementation we replaced ESP32 with ESP-01 which
+    required a programmer because there is no USB port.<br>
+    <br>We got the URLs we needed to use by pressing F12 on the page we need to get data from. Studying JavaScrips
+    revealed that we have to use the following format:<br>
+    <div class="snippet-clipboard-content notranslate position-relative overflow-auto"
+        data-snippet-clipboard-copy-content="https://www.n2yo.com/sat/instant-tracking.php?s=&lt;NORAD ID&gt;&amp;d=1">
+        <pre class="notranslate"><code>https://www.n2yo.com/sat/instant-tracking.php?s=&lt;NORAD ID&gt;&amp;d=1
+</code></pre>
+    </div>
+    <br>The North American Aerospace Defense (NORAD) ID is 25544 for ISS and for Tiangong it is 48274. Making a GET
+    request to the URL above will return a JSON formatted string that contains the GPS coordinates to be displayed.
+    That string and the one received from <a href="http://api.open-notify.org/astros.json"
+        rel="nofollow">http://api.open-notify.org/astros.json</a> are so simple we didn't have to use a library to
+    parse them.<br>
+    <br>
+    <h3>Board Support Package (BSP)</h3>
+    We started by downloading and extracting <a
+        href="https://github.com/RT-Thread/rt-thread/archive/refs/heads/master.zip">https://github.com/RT-Thread/rt-thread/archive/refs/heads/master.zip</a>
+    to get the latest BSP. According to the <a
+        href="https://www.st.com/resource/en/user_manual/um1932-discovery-kit-with-stm32f469ni-mcu-stmicroelectronics.pdf"
+        rel="nofollow">User Manual,</a> we have four USART ports and, four UART ports on that board, however, only
+    USART3 is enabled by default. Using STM32 CubeMX, we opened
+    %userprofile%\Downloads\rt-thread-master\rt-thread-master\bsp\stm32\stm32f469-st-disco\board\CubeMX_Config\CubeMX_Config.ioc
+    <br>
+    <br><img
+        src="https://hackster.imgix.net/uploads/attachments/1493474/image_iWCATBc1WD.png?auto=compress%2Cformat&amp;w=740&amp;h=555&amp;fit=max">
+    <br>
+    <br>After clicking Continue, we expanded connectivity on the left pane and clicked USART6.<br>
+    <br><img
+        src="https://hackster.imgix.net/uploads/attachments/1493476/image_gV307N3nFL.png?auto=compress%2Cformat&amp;w=740&amp;h=555&amp;fit=max">
+    <br>
+    <br>We replaced Disabled with Asynchronous in the Mode drop down menu. We then clicked Generate Code in the top
+    right
+    corner and closed the the application.<br>
+    <br><img
+        src="https://hackster.imgix.net/uploads/attachments/1493478/image_EBriBeYqBu.png?auto=compress%2Cformat&amp;w=740&amp;h=555&amp;fit=max">
+    <br>
+    <br>We located Kconfig (one folder up) and duplicated UART3 text then replaced with UART6. Now, it looks like this.
+    <br>
+    <br><img
+        src="https://hackster.imgix.net/uploads/attachments/1493480/image_ODG0ZcYt7V.png?auto=compress%2Cformat&amp;w=740&amp;h=555&amp;fit=max">
+    <br>
+    <br>BSP is ready to be used after saving this file.<br>
+    <br>
+    <h3>RT-Thread Studio</h3>
+    One minute into this tutorial shows how to import BSP that we just modified.<br>
+    <br><iframe src="https://www.youtube.com/embed/fREPLuh-h8k" frameborder="0" allowfullscreen></iframe><br>
+    <br>This is how our import looked.<br>
+    <br><img
+        src="https://hackster.imgix.net/uploads/attachments/1493517/image_5JcVIetR4y.png?auto=compress%2Cformat&amp;w=740&amp;h=555&amp;fit=max">
+    <br>
+    <br>We opened RT-Thread Settings from the left pane then clicked on the chevrons on the right.<br>
+    <br><img
+        src="https://hackster.imgix.net/uploads/attachments/1493522/image_Mh90eN0Op1.png?auto=compress%2Cformat&amp;w=740&amp;h=555&amp;fit=max">
+    <br>
+    <br>We came here to Enable LVGL for LCD which will automatically trigger all the needed toggles.<br>
+    <br><img
+        src="https://hackster.imgix.net/uploads/attachments/1493523/image_3S01mgFIOR.png?auto=compress%2Cformat&amp;w=740&amp;h=555&amp;fit=max">
+    <br>
+    <br>We needed to also turn on UART6 we just enabled.<br>
+    <br><img
+        src="https://hackster.imgix.net/uploads/attachments/1493525/image_v36wDnKT7A.png?auto=compress%2Cformat&amp;w=740&amp;h=555&amp;fit=max">
+    <br>
+    <br>We had to increase Rx buffer size from 64 to 1024.<br>
+    <br><img
+        src="https://hackster.imgix.net/uploads/attachments/1493526/image_cYCzltFjMT.png?auto=compress%2Cformat&amp;w=740&amp;h=555&amp;fit=max">
+    <br>
+    <br>We deleted all files in applications folder then copied our files from Github.<br>
+    <br><img
+        src="https://hackster.imgix.net/uploads/attachments/1493772/image_ya93kb7RzP.png?auto=compress%2Cformat&amp;w=740&amp;h=555&amp;fit=max">
+    <br>
+    <br>To allow auto reset after code download we needed to make this change.<br>
+    <br><img
+        src="https://hackster.imgix.net/uploads/attachments/1493527/image_AZQoMR27L7.png?auto=compress%2Cformat&amp;w=740&amp;h=555&amp;fit=max">
+    <br>
+    <br>Please note that this tutorial is using LVGL v8.3.1 and if you have to look something up on their website, make
+    sure you are looking at the correct version.<br>
+    <br><img
+        src="https://hackster.imgix.net/uploads/attachments/1493498/image_ZEiPbSuwp0.png?auto=compress%2Cformat&amp;w=740&amp;h=555&amp;fit=max">
+    <br>
+    <br>
+    <h3>Visual Studio Code</h3>
+    We used <a href="https://github.com/tzapu/WiFiManager">tzapu/WiFiManager</a> to connect ESP-01 to Wi-Fi without
+    hard coding credentials. Once we are online we can wait for URL to come from STM32F469 DISCOVERY via UART then
+    send back the unprocessed response.<br>
+    <br>
+    <h3>Hardware</h3>
+    <img
+        src="https://hackster.imgix.net/uploads/attachments/1493964/20220909_112949_7RjbrdlW54.jpg?auto=compress%2Cformat&amp;w=740&amp;h=555&amp;fit=max">
+    <br>
+    <br>We used the standard UART connection to make the boards communicate. Tx of one board is connected to Rx of the
+    other and vice versa. We are powering STM32F469 DISCOVERY with USB cable, and powering ESP-01 from it.<br>
+    <br>The breakout board we bought from AliExpress had one small problem; see if you can spot it.<br>
+    <br><img
+        src="https://hackster.imgix.net/uploads/attachments/1493628/image_rThL588BW3.png?auto=compress%2Cformat&amp;w=740&amp;h=555&amp;fit=max">
+    <br>
+    <br>Luckily the swapped pins didn't cause permanent damage to the programmer or ESP-01.<br>
+    <br>We soldered two switches on the bottom of the breakout board then connected it to a USB Serial Adapter. One
+    switch is the reset switch that connects RST to ground. The second switch keeps GPIO0 grounded while resetting
+    the board then it can be release right after that.<br>
+    <br><img
+        src="https://hackster.imgix.net/uploads/attachments/1493627/image_VaIFXOHZhR.png?auto=compress%2Cformat&amp;w=740&amp;h=555&amp;fit=max">
+    <br>
+    <br>Before we plug to the laptop we ensured the programmer's jumper is on 3.3V position not 5V. We used VS Code to
+    program ESP-01, but Arduino IDE could be used, too. The red jumper between Vcc and CHPD is needed regardless of
+    the mode.<br>
+    <br><img
+        src="https://hackster.imgix.net/uploads/attachments/1493778/image_ZM1WaLc4kP.png?auto=compress%2Cformat&amp;w=740&amp;h=555&amp;fit=max">
+    <br>
+    <br>
+    <h3>Wiring</h3>
+    <img
+        src="https://hackster.imgix.net/uploads/attachments/1493967/wiring_3PbbgH9o3S.jpg?auto=compress%2Cformat&amp;w=800&amp;h=600&amp;fit=max">
+    <br>
+    <br>
+    <h3>Demo</h3>
+    <iframe width="800" height="600" src="https://www.youtube.com/embed/mwpWGCFDQZM" frameborder="0"
+        allowfullscreen></iframe><br>
+
+
+</body>
+
+</html>
